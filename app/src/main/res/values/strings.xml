@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">GostKeeper</string>
+    <string name="secrets_list_activity_name">Защищенные данные</string>
+    <string name="view_secret_activity_name">Просмотр зашифрованной записи</string>
+    <string name="create_secret_activity_name">Создание зашифрованной записи</string>
+    <string name="secret_name">Название записи</string>
+    <string name="secret_data">Защищаемая информация</string>
+    <string name="create_secret_button_name">Создать</string>
+    <string name="commit_secret_button_name">Сохранить</string>
+</resources>
