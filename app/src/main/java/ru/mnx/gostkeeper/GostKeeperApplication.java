@@ -2,6 +2,7 @@ package ru.mnx.gostkeeper;
 
 import android.app.Application;
 
+import ru.mnx.gostkeeper.data.EncryptedSecretDbHelper;
 import ru.mnx.gostkeeper.data.SecretDbHelper;
 
 /**
@@ -14,7 +15,7 @@ public class GostKeeperApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        this.secretDbHelper = new SecretDbHelper(getApplicationContext());
+        this.secretDbHelper = new EncryptedSecretDbHelper(getApplicationContext());
     }
 
     public SecretDbHelper getSecretDbHelper() {
