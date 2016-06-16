@@ -2,10 +2,11 @@ package ru.mnx.gostkeeper.data;
 
 import android.content.Context;
 import android.util.Base64;
-import android.util.Log;
 
 import java.security.GeneralSecurityException;
 import java.util.Arrays;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
@@ -14,14 +15,24 @@ import javax.crypto.spec.SecretKeySpec;
 import ru.mnx.gostkeeper.data.entity.SecretWithData;
 
 /**
- * Class for store and retrive information about Secret from DB;
+ * Class for store and retrieve information about Secret from DB;
  * Encrypt and decrypt information before send it to DB;
  */
 public class EncryptedSecretDbHelper extends SecretDbHelper {
 
-    private final static int IV_SIZE = 16;
-    private final static String ALGORITHM = "AES/CBC/PKCS5Padding";
-    private final static String KEY_ALGORITHM = "AES";
+    private static final Logger log = Logger.getLogger(EncryptedSecretDbHelper.class.getName());
+
+    //based on block size of algorithm
+    //ГОСТ Р 34.12-2015 Magma - 8
+    //AES - 16
+    private final static int IV_SIZE = 8;
+    //TODO: make factory
+    //ГОСТ Р 34.12-2015 Magma - "GOST28147/CBC/PKCS5Padding"
+    //AES - "AES/CBC/PKCS5Padding"
+    private final static String ALGORITHM = "GOST28147/CBC/PKCS5Padding";
+    //ГОСТ Р 34.12-2015 Magma - "GOST28147"
+    //AES - "AES"
+    private final static String KEY_ALGORITHM = "GOST28147";
 
     public EncryptedSecretDbHelper(Context context) {
         super(context);
@@ -31,16 +42,16 @@ public class EncryptedSecretDbHelper extends SecretDbHelper {
     public long createSecret(byte[] name, byte[] data) {
         final byte[] keyBytes = getKey();
         final byte[] ivBytes = getInitVector(name);
-        Log.i(this.getClass().getName(), "Original data: "+new String(data));
+        log.info("Original data: "+new String(data));
         final byte[] encryptedData = encrypt(data, keyBytes, ivBytes);
         String encryptedDataAsString = Base64.encodeToString(encryptedData, Base64.DEFAULT);
-        Log.i(this.getClass().getName(), "Encrypted data: "+encryptedDataAsString);
+        log.info("Encrypted data: "+encryptedDataAsString);
         return super.createSecret(name, encryptedDataAsString.getBytes());
     }
 
     private byte[] getKey() {
         //TODO: use real key
-        return "1234567890123456".getBytes();
+        return "12345678901234561234567890123456".getBytes();
     }
 
     private byte[] getInitVector(byte[] name) {
@@ -55,7 +66,7 @@ public class EncryptedSecretDbHelper extends SecretDbHelper {
             cipher.init(Cipher.ENCRYPT_MODE, secretKeySpec, new IvParameterSpec(iv));
             return cipher.doFinal(data);
         } catch (GeneralSecurityException e) {
-            Log.e(this.getClass().getName(), "Encrypting error", e);
+            log.log(Level.SEVERE, "Encrypting error", e);
             throw new IllegalStateException(e);
         }
     }
@@ -66,12 +77,12 @@ public class EncryptedSecretDbHelper extends SecretDbHelper {
         //TODO: wroooong
         String dataAsString = rawSecret.getData();
         byte[] data = Base64.decode(dataAsString, Base64.DEFAULT);
-        Log.i(this.getClass().getName(), "Database data: "+dataAsString);
+        log.info("Database data: "+dataAsString);
         byte[] name = rawSecret.getName().getBytes();
         final byte[] keyBytes = getKey();
         final byte[] ivBytes = getInitVector(name);
         final byte[] decryptedData = decrypt(data, keyBytes, ivBytes);
-        Log.i(this.getClass().getName(), "Decrypted data: "+new String(decryptedData));
+        log.info("Decrypted data: "+new String(decryptedData));
         return new SecretWithData(
                 rawSecret.getId(),
                 rawSecret.getName(),
@@ -86,7 +97,7 @@ public class EncryptedSecretDbHelper extends SecretDbHelper {
             cipher.init(Cipher.DECRYPT_MODE, secretKeySpec, new IvParameterSpec(iv));
             return cipher.doFinal(data);
         } catch (GeneralSecurityException e) {
-            Log.e(this.getClass().getName(), "Decrypting error", e);
+            log.log(Level.SEVERE, "Decrypting error", e);
             throw new IllegalStateException(e);
         }
     }
