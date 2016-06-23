@@ -3,19 +3,17 @@ package ru.mnx.gostkeeper;
 import android.app.Application;
 import android.content.Context;
 import android.support.multidex.MultiDex;
-import android.util.Log;
 
-import org.bouncycastle.jce.interfaces.GOST3410Key;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
-import java.security.Provider;
+import java.security.KeyStore;
 import java.security.Security;
+import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import javax.crypto.Cipher;
 
 import ru.mnx.gostkeeper.data.EncryptedSecretDbHelper;
 import ru.mnx.gostkeeper.data.SecretDbHelper;
+import ru.mnx.gostkeeper.data.encryption.GostKeeperKeystore;
 
 /**
  * Main application class
@@ -27,11 +25,17 @@ public class GostKeeperApplication extends Application {
 
 
     private SecretDbHelper secretDbHelper;
+    private GostKeeperKeystore keystore;
 
     @Override
     public void onCreate() {
         super.onCreate();
         setBouncyCastleAsDefaultProvider();
+        try {
+            this.keystore = new GostKeeperKeystore(getApplicationContext(), new KeyStore.PasswordProtection(new char[]{'1', '2', '3', '4'}));
+        } catch (GostKeeperKeystore.KeystoreException e) {
+            log.log(Level.SEVERE, "Application initialization error", e);
+        }
         this.secretDbHelper = new EncryptedSecretDbHelper(getApplicationContext());
     }
 
