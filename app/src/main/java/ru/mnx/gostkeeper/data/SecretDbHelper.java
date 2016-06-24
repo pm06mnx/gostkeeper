@@ -10,6 +10,7 @@ import android.provider.BaseColumns;
 import java.util.ArrayList;
 import java.util.List;
 
+import ru.mnx.gostkeeper.data.encryption.GostKeeperKeystore;
 import ru.mnx.gostkeeper.data.entity.Secret;
 import ru.mnx.gostkeeper.data.entity.SecretWithData;
 
@@ -82,7 +83,7 @@ public class SecretDbHelper extends SQLiteOpenHelper {
      * @param data защищаемая информация
      * @return идентификатор нового секрета или -1 в случае ошибки
      */
-    public long createSecret(byte[] name, byte[] data) {
+    public long createSecret(byte[] name, byte[] data) throws GostKeeperKeystore.KeystoreException {
         ContentValues row = new ContentValues();
         row.put(TABLE_SECRETS_FIELD_NAME, name);
         row.put(TABLE_SECRETS_FIELD_DATA, data);
@@ -98,7 +99,7 @@ public class SecretDbHelper extends SQLiteOpenHelper {
      * @param id идентификатор секрета
      * @return вся информация о секрете, включая защищаемые данные
      */
-    public SecretWithData getSecretWithData(int id) {
+    public SecretWithData getSecretWithData(int id) throws GostKeeperKeystore.KeystoreException {
         Cursor cursor = null;
         try {
             cursor = getReadableDatabase().query(

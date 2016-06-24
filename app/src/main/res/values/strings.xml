@@ -7,4 +7,6 @@
     <string name="secret_data">Защищаемая информация</string>
     <string name="create_secret_button_name">Создать</string>
     <string name="commit_secret_button_name">Сохранить</string>
+    <string name="decryption_error_message">Ошибка расшифровки</string>
+    <string name="encryption_error_message">Ошибка шифрования</string>
 </resources>

@@ -4,21 +4,19 @@ package ru.mnx.gostkeeper.data.encryption;
  * Supported encryption algorithms
  */
 public enum  EncryptionAlgorithm {
-    PLAIN_TEXT(0, "", 0, 0),
-    AES(1, "AES", 256, 128),
-    GOST28147(2, "GOST28147", 256, 64),
-    GOST28147_AES(3, "", 0, 0);
+    PLAIN_TEXT(0, "", 0),
+    AES(1, "AES", 256),
+    GOST28147(2, "GOST28147", 256),
+    GOST28147_AES(3, "", 0);
 
     private final int code;
     private final String name;
     private final int keySize;
-    private final int blockSize;
 
-    EncryptionAlgorithm(int code, String name, int keySize, int blockSize) {
+    EncryptionAlgorithm(int code, String name, int keySize) {
         this.code = code;
         this.name = name;
         this.keySize = keySize;
-        this.blockSize = blockSize;
     }
 
     /**
@@ -40,12 +38,5 @@ public enum  EncryptionAlgorithm {
      */
     public int getKeySize() {
         return keySize;
-    }
-
-    /**
-     * @return size of block used with this algorithm
-     */
-    public int getBlockSize() {
-        return blockSize;
     }
 }

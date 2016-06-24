@@ -10,12 +10,14 @@ import android.widget.Button;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import ru.mnx.gostkeeper.data.encryption.GostKeeperKeystore;
 import ru.mnx.gostkeeper.data.entity.Secret;
 import ru.mnx.gostkeeper.data.entity.SecretWithData;
 
@@ -60,8 +62,7 @@ public class SecretsListActivity extends AppCompatActivity {
     }
 
     private List<Secret> getSecrets() {
-        GostKeeperApplication app = (GostKeeperApplication) getApplication();
-        return app.getSecretDbHelper().getSecretList();
+        return GostKeeperApplication.getSecretDbHelper().getSecretList();
     }
 
     @Override
@@ -77,8 +78,11 @@ public class SecretsListActivity extends AppCompatActivity {
         final CharSequence name = (CharSequence) extras.get(CreateSecretActivity.SECRET_NAME_EXTRA);
         final CharSequence data = (CharSequence) extras.get(CreateSecretActivity.SECRET_DATA_EXTRA);
         if (name != null && data != null) {
-            GostKeeperApplication app = (GostKeeperApplication) getApplication();
-            app.getSecretDbHelper().createSecret(name.toString().getBytes(), data.toString().getBytes());
+            try {
+                GostKeeperApplication.getSecretDbHelper().createSecret(name.toString().getBytes(), data.toString().getBytes());
+            } catch (GostKeeperKeystore.KeystoreException e) {
+                Toast.makeText(getApplicationContext(), R.string.encryption_error_message, Toast.LENGTH_LONG).show();
+            }
         }
     }
 
@@ -90,8 +94,12 @@ public class SecretsListActivity extends AppCompatActivity {
 
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            SecretWithData secret = getSecretWithData(parent, position);
-            show(parent, secret);
+            try {
+                SecretWithData secret = getSecretWithData(parent, position);
+                show(parent, secret);
+            } catch (GostKeeperKeystore.KeystoreException e) {
+                Toast.makeText(view.getContext(), R.string.decryption_error_message, Toast.LENGTH_LONG).show();
+            }
         }
 
         private void show(AdapterView<?> parent, SecretWithData secret) {
@@ -102,16 +110,11 @@ public class SecretsListActivity extends AppCompatActivity {
             parent.getContext().startActivity(newActivity);
         }
 
-        private SecretWithData getSecretWithData(AdapterView<?> parent, int position) {
+        private SecretWithData getSecretWithData(AdapterView<?> parent, int position) throws GostKeeperKeystore.KeystoreException {
             @SuppressWarnings("unchecked")
             Map<String, Object> item = (Map<String, Object>) parent.getItemAtPosition(position);
             int id = (int) item.get(LIST_ITEM_ID);
-            return getApplication(parent).getSecretDbHelper().getSecretWithData(id);
-        }
-
-        private GostKeeperApplication getApplication(AdapterView<?> parent) {
-            Activity activity = (Activity) parent.getContext();
-            return (GostKeeperApplication) activity.getApplication();
+            return GostKeeperApplication.getSecretDbHelper().getSecretWithData(id);
         }
     }
 

@@ -9,8 +9,8 @@ import android.widget.EditText;
 
 public class CreateSecretActivity extends AppCompatActivity {
 
-    public final static String SECRET_NAME_EXTRA = "SecretName";
-    public final static String SECRET_DATA_EXTRA = "SecretData";
+    public static final String SECRET_NAME_EXTRA = "SecretName";
+    public static final String SECRET_DATA_EXTRA = "SecretData";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
