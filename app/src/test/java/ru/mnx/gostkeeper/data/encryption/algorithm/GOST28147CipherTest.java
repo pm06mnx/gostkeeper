@@ -12,21 +12,21 @@ import ru.mnx.gostkeeper.data.encryption.EncryptionAlgorithm;
 
 import static org.junit.Assert.assertArrayEquals;
 
-public class AESCipherTest {
+public class GOST28147CipherTest {
 
     private static final byte[] SALT = "salt".getBytes();
     private static final Key KEY = new SecretKeySpec(
             Hex.decode("3031323334353637383931323334353630313233343536373839313233343536"),
-            EncryptionAlgorithm.AES.getName()
+            EncryptionAlgorithm.GOST28147.getName()
     );
     private static final byte[] DATA = "secureddatanopad".getBytes();
-    private static final byte[] ENCODED_DATA = Hex.decode("01cfb27d74465e817a11e1d199bfbae33714c81cc9d998cf295c7c72fc11531d");
+    private static final byte[] ENCODED_DATA = Hex.decode("a63c928e4a7c64af824825ae457f7264104fa7bf05aba077");
 
-    private AESCipher cipher;
+    private GOST28147Cipher cipher;
 
     @Before
     public void init() {
-        cipher = new AESCipher();
+        cipher = new GOST28147Cipher();
     }
 
     @Test

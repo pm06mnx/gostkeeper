@@ -6,7 +6,7 @@ import java.util.logging.Logger;
 /**
  * GOST28147 + AES cipher implementation
  */
-public class GOST28147AESCipher implements CipherAlgorithm {
+public class GOST28147AESCipher extends CipherAlgorithm {
 
     private static final Logger log = Logger.getLogger(GOST28147Cipher.class.getName());
 

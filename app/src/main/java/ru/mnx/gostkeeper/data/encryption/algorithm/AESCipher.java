@@ -1,18 +1,18 @@
 package ru.mnx.gostkeeper.data.encryption.algorithm;
 
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+
 import java.security.GeneralSecurityException;
 import java.security.Key;
-import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.crypto.Cipher;
-import javax.crypto.spec.IvParameterSpec;
 
 /**
  * AES cipher implementation
  */
-public class AESCipher implements CipherAlgorithm {
+public class AESCipher extends CipherAlgorithm {
 
     private static final Logger log = Logger.getLogger(AESCipher.class.getName());
 
@@ -22,8 +22,8 @@ public class AESCipher implements CipherAlgorithm {
     @Override
     public byte[] encrypt(byte[] data, Key key, byte[] salt) {
         try {
-            Cipher cipher = Cipher.getInstance(ALGORITHM);
-            cipher.init(Cipher.ENCRYPT_MODE, key, makeIv(salt));
+            Cipher cipher = Cipher.getInstance(ALGORITHM, new BouncyCastleProvider());
+            cipher.init(Cipher.ENCRYPT_MODE, key, makeIv(salt, cipher));
             return cipher.doFinal(data);
         } catch (GeneralSecurityException e) {
             log.log(Level.WARNING, "AES encryption error", e);
@@ -31,22 +31,11 @@ public class AESCipher implements CipherAlgorithm {
         }
     }
 
-    private IvParameterSpec makeIv(byte[] salt) {
-        if (salt == null) {
-            return null;
-        }
-        if (salt.length < IV_SIZE) {
-            salt = Arrays.copyOf(salt, IV_SIZE);
-        }
-        return new IvParameterSpec(salt, 0, IV_SIZE);
-    }
-
-
     @Override
     public byte[] decrypt(byte[] data, Key key, byte[] salt) {
         try {
-            Cipher cipher = Cipher.getInstance(ALGORITHM);
-            cipher.init(Cipher.DECRYPT_MODE, key, makeIv(salt));
+            Cipher cipher = Cipher.getInstance(ALGORITHM, new BouncyCastleProvider());
+            cipher.init(Cipher.DECRYPT_MODE, key, makeIv(salt, cipher));
             return cipher.doFinal(data);
         } catch (GeneralSecurityException e) {
             log.log(Level.WARNING, "AES decryption error", e);

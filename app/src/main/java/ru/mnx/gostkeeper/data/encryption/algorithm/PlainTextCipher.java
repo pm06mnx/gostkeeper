@@ -5,7 +5,7 @@ import java.security.Key;
 /**
  * No encryption cipher
  */
-public class PlainTextCipher implements CipherAlgorithm {
+public class PlainTextCipher extends CipherAlgorithm {
 
     @Override
     public byte[] encrypt(byte[] data, Key key, byte[] salt) {

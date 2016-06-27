@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 import ru.mnx.gostkeeper.data.encryption.GostKeeperKeystore;
+import ru.mnx.gostkeeper.data.encryption.algorithm.CipherException;
 import ru.mnx.gostkeeper.data.entity.Secret;
 import ru.mnx.gostkeeper.data.entity.SecretWithData;
 
@@ -97,7 +98,7 @@ public class SecretsListActivity extends AppCompatActivity {
             try {
                 SecretWithData secret = getSecretWithData(parent, position);
                 show(parent, secret);
-            } catch (GostKeeperKeystore.KeystoreException e) {
+            } catch (GostKeeperKeystore.KeystoreException | CipherException e) {
                 Toast.makeText(view.getContext(), R.string.decryption_error_message, Toast.LENGTH_LONG).show();
             }
         }
