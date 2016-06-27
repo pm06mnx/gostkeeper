@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableEntryException;
 import java.security.cert.CertificateException;
 import java.util.Enumeration;
 import java.util.logging.Level;
@@ -134,6 +135,33 @@ public class GostKeeperKeystore {
     }
 
 
+    public SecretKey getAESKey() throws KeystoreException {
+        try {
+            KeyStore.Entry entry = keyStore.getEntry(AES_KEY_ALIAS, null);
+            if (entry instanceof KeyStore.SecretKeyEntry) {
+                return ((KeyStore.SecretKeyEntry) entry).getSecretKey();
+            }
+            throw new KeystoreException("Unknown entry type");
+        } catch (UnrecoverableEntryException | NoSuchAlgorithmException | KeyStoreException e) {
+            log.log(Level.SEVERE, "Error while getting key", e);
+            throw new KeystoreException(e);
+        }
+    }
+
+    public SecretKey getGost28147Key() throws KeystoreException {
+        try {
+            KeyStore.Entry entry = keyStore.getEntry(GOST28147_KEY_ALIAS, null);
+            if (entry instanceof KeyStore.SecretKeyEntry) {
+                return ((KeyStore.SecretKeyEntry) entry).getSecretKey();
+            }
+            throw new KeystoreException("Unknown entry type");
+        } catch (UnrecoverableEntryException | NoSuchAlgorithmException | KeyStoreException e) {
+            log.log(Level.SEVERE, "Error while getting key", e);
+            throw new KeystoreException(e);
+        }
+    }
+
+
     /**
      * Error while talking with KeyStore
      */
@@ -141,6 +169,10 @@ public class GostKeeperKeystore {
 
         public KeystoreException(Throwable e) {
             super(e);
+        }
+
+        public KeystoreException(String message) {
+            super(message);
         }
     }
 }
