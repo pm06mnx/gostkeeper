@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">GostKeeper</string>
+    <string name="password_activity_name">Ввод пароля</string>
     <string name="secrets_list_activity_name">Защищенные данные</string>
     <string name="view_secret_activity_name">Просмотр зашифрованной записи</string>
     <string name="create_secret_activity_name">Создание зашифрованной записи</string>
@@ -9,4 +10,6 @@
     <string name="commit_secret_button_name">Сохранить</string>
     <string name="decryption_error_message">Ошибка расшифровки</string>
     <string name="encryption_error_message">Ошибка шифрования</string>
+    <string name="enter_button_name">Вход</string>
+    <string name="wrong_password_error_message">Неверный пароль</string>
 </resources>

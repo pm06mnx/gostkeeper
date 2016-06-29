@@ -2,6 +2,8 @@ package ru.mnx.gostkeeper.data.encryption;
 
 import android.content.Context;
 
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -11,8 +13,6 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableEntryException;
 import java.security.cert.CertificateException;
-import java.util.Enumeration;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.crypto.KeyGenerator;
@@ -25,8 +25,8 @@ public class GostKeeperKeystore {
 
     private static final Logger log = Logger.getLogger(GostKeeperKeystore.class.getName());
 
-    private static final String KEYSTORE_NAME = KeyStore.getDefaultType();
-    private static final String KEYSTORE_PATH = "store.jks";
+    private static final String KEYSTORE_NAME = "UBER";
+    private static final String KEYSTORE_PATH = ".keystore";
     private static final String AES_KEY_ALIAS = "aes";
     private static final String GOST28147_KEY_ALIAS = "gost28147";
 
@@ -41,16 +41,7 @@ public class GostKeeperKeystore {
         this.appContext = appContext;
         this.keystorePassword = keystorePassword;
         this.keyStore = getKeyStore();
-
-        try {
-            Enumeration<String> aliases = this.keyStore.aliases();
-            while (aliases.hasMoreElements()) {
-                String alias = aliases.nextElement();
-                log.info("Alias - " + alias);
-            }
-        } catch (KeyStoreException e) {
-            e.printStackTrace();
-        }
+        log.info("Keystore initialized");
     }
 
     private KeyStore getKeyStore() throws KeystoreException {
@@ -73,8 +64,7 @@ public class GostKeeperKeystore {
             ks.load(new FileInputStream(getKeystorePath()), keystorePassword.getPassword());
             return ks;
         } catch (CertificateException | NoSuchAlgorithmException | KeyStoreException | IOException e) {
-            log.log(Level.SEVERE, "Keystore initialization error", e);
-            throw new KeystoreException(e);
+            throw new KeystoreException("Keystore initialization error", e);
         }
     }
 
@@ -86,8 +76,7 @@ public class GostKeeperKeystore {
             saveKeystore(ks);
             return ks;
         } catch (IOException | NoSuchAlgorithmException | CertificateException | KeyStoreException e) {
-            log.log(Level.SEVERE, "Keystore creation error", e);
-            throw new KeystoreException(e);
+            throw new KeystoreException("Keystore creation error", e);
         }
     }
 
@@ -96,30 +85,27 @@ public class GostKeeperKeystore {
             keyStore.setEntry(AES_KEY_ALIAS, new KeyStore.SecretKeyEntry(createAESKey()), null);
             keyStore.setEntry(GOST28147_KEY_ALIAS, new KeyStore.SecretKeyEntry(createGost28147Key()), null);
         } catch (KeyStoreException e) {
-            log.log(Level.SEVERE, "Keys creation error", e);
-            throw new KeystoreException(e);
+            throw new KeystoreException("Keys creation error", e);
         }
     }
 
     private SecretKey createAESKey() throws KeystoreException {
         try {
-            KeyGenerator keyGenerator = KeyGenerator.getInstance(EncryptionAlgorithm.AES.getName());
+            KeyGenerator keyGenerator = KeyGenerator.getInstance(EncryptionAlgorithm.AES.getName(), new BouncyCastleProvider());
             keyGenerator.init(EncryptionAlgorithm.AES.getKeySize());
             return keyGenerator.generateKey();
         } catch (NoSuchAlgorithmException e) {
-            log.log(Level.SEVERE, "AES key creation error", e);
-            throw new KeystoreException(e);
+            throw new KeystoreException("AES key creation error", e);
         }
     }
 
     private SecretKey createGost28147Key() throws KeystoreException {
         try {
-            KeyGenerator keyGenerator = KeyGenerator.getInstance(EncryptionAlgorithm.GOST28147.getName());
+            KeyGenerator keyGenerator = KeyGenerator.getInstance(EncryptionAlgorithm.GOST28147.getName(), new BouncyCastleProvider());
             keyGenerator.init(EncryptionAlgorithm.GOST28147.getKeySize());
             return keyGenerator.generateKey();
         } catch (NoSuchAlgorithmException e) {
-            log.log(Level.SEVERE, "Gost28147 key creation error", e);
-            throw new KeystoreException(e);
+            throw new KeystoreException("Gost28147 key creation error", e);
         }
     }
 
@@ -129,8 +115,7 @@ public class GostKeeperKeystore {
             keyStore.store(fos, keystorePassword.getPassword());
             fos.close();
         } catch (CertificateException | NoSuchAlgorithmException | KeyStoreException | IOException e) {
-            log.log(Level.SEVERE, "Keystore saving error", e);
-            throw new KeystoreException(e);
+            throw new KeystoreException("Keystore saving error", e);
         }
     }
 
@@ -143,8 +128,7 @@ public class GostKeeperKeystore {
             }
             throw new KeystoreException("Unknown entry type");
         } catch (UnrecoverableEntryException | NoSuchAlgorithmException | KeyStoreException e) {
-            log.log(Level.SEVERE, "Error while getting key", e);
-            throw new KeystoreException(e);
+            throw new KeystoreException("Error while getting key", e);
         }
     }
 
@@ -156,8 +140,7 @@ public class GostKeeperKeystore {
             }
             throw new KeystoreException("Unknown entry type");
         } catch (UnrecoverableEntryException | NoSuchAlgorithmException | KeyStoreException e) {
-            log.log(Level.SEVERE, "Error while getting key", e);
-            throw new KeystoreException(e);
+            throw new KeystoreException("Error while getting key", e);
         }
     }
 
@@ -167,12 +150,12 @@ public class GostKeeperKeystore {
      */
     public static class KeystoreException extends Exception {
 
-        public KeystoreException(Throwable e) {
-            super(e);
-        }
-
         public KeystoreException(String message) {
             super(message);
+        }
+
+        public KeystoreException(String message, Throwable e) {
+            super(message, e);
         }
     }
 }

@@ -12,19 +12,22 @@
         <activity
             android:name=".SecretsListActivity"
             android:label="@string/secrets_list_activity_name">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".ViewSecretActivity"
-            android:label="@string/view_secret_activity_name">
-        </activity>
+            android:label="@string/view_secret_activity_name"/>
         <activity
             android:name=".CreateSecretActivity"
-            android:label="@string/create_secret_activity_name">
+            android:label="@string/create_secret_activity_name"/>
+        <activity
+            android:name=".PasswordActivity"
+            android:label="@string/password_activity_name"
+            android:windowSoftInputMode="stateAlwaysVisible"
+            android:noHistory="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
     </application>
 
