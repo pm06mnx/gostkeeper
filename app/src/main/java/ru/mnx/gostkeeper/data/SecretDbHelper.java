@@ -25,6 +25,7 @@ public class SecretDbHelper extends SQLiteOpenHelper {
     private static final String TABLE_SECRETS_FIELD_ID = BaseColumns._ID;
     private static final String TABLE_SECRETS_FIELD_NAME = "name";
     private static final String TABLE_SECRETS_FIELD_DATA = "data";
+    private static final String TABLE_SECRETS_FIELD_CIPHER = "cipher";
 
     public SecretDbHelper(Context context) {
         super(context, DATABASE_FILE, null, SCHEMA_VERSION);
@@ -35,7 +36,8 @@ public class SecretDbHelper extends SQLiteOpenHelper {
         db.execSQL("CREATE TABLE " + TABLE_SECRETS + " (" +
                 TABLE_SECRETS_FIELD_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
                 TABLE_SECRETS_FIELD_NAME + " BLOB," +
-                TABLE_SECRETS_FIELD_DATA + " BLOB" +
+                TABLE_SECRETS_FIELD_DATA + " BLOB," +
+                TABLE_SECRETS_FIELD_CIPHER + " INTEGER" +
                 ");");
     }
 
@@ -104,7 +106,7 @@ public class SecretDbHelper extends SQLiteOpenHelper {
         try {
             cursor = getReadableDatabase().query(
                     TABLE_SECRETS,
-                    new String[]{TABLE_SECRETS_FIELD_ID, TABLE_SECRETS_FIELD_NAME, TABLE_SECRETS_FIELD_DATA},
+                    new String[]{TABLE_SECRETS_FIELD_ID, TABLE_SECRETS_FIELD_NAME, TABLE_SECRETS_FIELD_DATA, TABLE_SECRETS_FIELD_CIPHER},
                     TABLE_SECRETS_FIELD_ID + " = " + id,
                     null,
                     null,
